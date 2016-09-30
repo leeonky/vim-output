@@ -6,8 +6,8 @@ class TestOutputForm(unittest.TestCase):
 		class FakeOutputer(object):
 			def __init__(self):
 				self._content = []
-			def append(self, *rows):
-				self._content.extend(*rows)
+			def append(self, rows):
+				self._content.extend(rows)
 			def content(self):
 				return self._content
 
