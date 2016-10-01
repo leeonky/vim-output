@@ -9,24 +9,31 @@ python sys.path.append(vim.eval('expand("<sfile>:h")')+'/widgets')
 python << endOfPython
 
 import output_form
-import synchronized_console
+import blocked_console
 
 class VimOutput(object):
 	OutputForm = output_form.OutputForm
-	SynchronizedConsole = synchronized_console.SynchronizedConsole
+	BlockedConsole = blocked_console.BlockedConsole
+
+	@staticmethod
+	def execute(title, *commands):
+		rich_box = VimETUI.RichMessageBox(title=title)
+		rich_box.show()
+
+		console = VimOutput.BlockedConsole(*commands)
+
+		output_form = VimOutput.OutputForm(rich_box, console)
+		output_form.synchronize()
+
+		return output_form
+
 
 endOfPython
 
 function! TestSyncCmd(cmds)
 python << endOfPython
-import vim
 
-rich_box = VimETUI.RichMessageBox(title='Console')
-rich_box.show()
-
-console = VimOutput.SynchronizedConsole(*vim.eval('a:cmds'))
-
-VimOutput.OutputForm(rich_box, console).synchronize()
+VimOutput.execute('Console', *vim.eval('a:cmds'))
 
 endOfPython
 endfunction
